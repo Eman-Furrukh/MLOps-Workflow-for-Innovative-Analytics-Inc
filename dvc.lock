@@ -1,0 +1,46 @@
+schema: '2.0'
+stages:
+  collect_data:
+    cmd: python src/collect_data.py
+    deps:
+    - path: src/collect_data.py
+      hash: md5
+      md5: 287f5a0c5695e2fa4804ce0a293c7174
+      size: 1440
+    outs:
+    - path: data/raw/glasgow_weather_data.csv
+      hash: md5
+      md5: ee390ec5599f5ac6c7e85e26d561f6aa
+      size: 123
+  preprocess_data:
+    cmd: python src/preprocess_data.py
+    deps:
+    - path: data/raw/glasgow_weather_data.csv
+      hash: md5
+      md5: ee390ec5599f5ac6c7e85e26d561f6aa
+      size: 123
+    - path: src/preprocess_data.py
+      hash: md5
+      md5: a9b11369912431cadb4af638760fe6a7
+      size: 1461
+    outs:
+    - path: data/processed/preprocessed_weather_data.csv
+      hash: md5
+      md5: 33bdd02e2d1bb132e1a52f21d1d2d075
+      size: 58
+  train_model:
+    cmd: python src/train_model.py
+    deps:
+    - path: data/processed/preprocessed_weather_data.csv
+      hash: md5
+      md5: 33bdd02e2d1bb132e1a52f21d1d2d075
+      size: 58
+    - path: src/train_model.py
+      hash: md5
+      md5: 50c0e945e57f2ebef9a03ba07702eebe
+      size: 1632
+    outs:
+    - path: model/weather_model.pkl
+      hash: md5
+      md5: a5a80a6cd755fb105b4b99ffb86070f9
+      size: 39985
