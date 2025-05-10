@@ -6,11 +6,11 @@ Welcome to our final semester project! This repository contains the complete MLO
 
 ## 👨‍👩‍👧‍👦 Team Members
 
-|      Name      |               Role                 |
-|----------------|------------------------------------|
-| Eman-Furrukh   | GitHub Management & CI/CD          |
-| shamail-123    | Dockerization & Jenkins            |
-| mahrukh272004  | Kubernetes Deployment & Monitoring |
+|      Name      |                        Role                      |
+|----------------|--------------------------------------------------|
+| Eman-Furrukh   | GitHub Management & CI/CD, Airflow, DVC          |
+| shamail-123    | Dockerization, MLFlow                            |
+| mahrukh272004  | Kubernetes Deployment & Monitoring, Jenkins      |
 
 ---
 
