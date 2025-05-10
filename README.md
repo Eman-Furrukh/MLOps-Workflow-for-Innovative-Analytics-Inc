@@ -132,15 +132,63 @@ git add data/.gitignore collect_data.csv.dvc
 git commit -m "Add versioned dataset"
 ```
 
-Test casses
-Test Case 1: Verifies that fetch_weather() returns valid data with correct types and structure
+##Test casses
 
-Test Case 2: Tests that write_to_csv() correctly creates files and writes data
+| Test Case | Description | Verification Points |
+|-----------|-------------|---------------------|
+| Test Case 1 | Verifies that `fetch_weather()` returns valid data with correct types and structure 
+| Test Case 2 | Tests that `write_to_csv()` correctly creates files and writes data
+| Test Case 3 | Validates that preprocessing creates the expected features and handles different weather conditions 
+|Test Case 4 | Checks that model training creates a valid model file 
+| Test Case 5 | Verifies that the trained model can make predictions 
+| Bonus Test Case| Tests error handling for empty data and failed API calls 
 
-Test Case 3: Validates that preprocessing creates the expected features and handles different weather conditions
 
-Test Case 4: Checks that model training creates a valid model file
+##Flake8 Linting Workflow
+Trigger: Runs on every pull request to the dev branch
 
-Test Case 5: Verifies that the trained model can make predictions
+Environment: Ubuntu with Python 3.9
 
-Bonus Test Case: Tests error handling for empty data and failed API calls
+Key Steps:
+
+Checks out repository code
+
+Sets up Python environment
+
+Installs Flake8 and project dependencies
+
+Runs two Flake8 checks:
+
+Critical errors only (E9,F63,F7,F82)
+
+Full style check with 100-character line length limit
+
+Purpose: Enforces consistent Python code style and catches syntax errors before merging
+
+
+##Test Execution Workflow
+Purpose: Automatically runs test cases on Python code changes
+
+Trigger Conditions:
+
+On every pull request to the test branch
+
+On every direct push to the test branch
+
+Execution Environment:
+
+Ubuntu latest
+
+Python 3.9
+
+Workflow Steps:
+
+Checkout: Retrieves the latest code
+
+Setup: Configures Python environment
+
+Dependencies: Installs required packages from requirements.txt
+
+Testing: Executes all test cases using python test.py
+
+
