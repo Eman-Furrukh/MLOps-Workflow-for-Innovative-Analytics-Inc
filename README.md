@@ -37,7 +37,7 @@ mlops-project/
 
 - **Python 3.9**
 - **Flask / FastAPI**
-- **scikit-learn**
+- **Airflow**
 - **GitHub Actions**
 - **Docker & DockerHub**
 - **Jenkins**
@@ -127,7 +127,7 @@ View at http://localhost:5001
 ## 📦 Data Versioning with DVC
 ```bash
 dvc init
-dvc add data/raw/dataset.csv
-git add data/.gitignore dataset.csv.dvc
+dvc add data/raw/collect_data.csv
+git add data/.gitignore collect_data.csv.dvc
 git commit -m "Add versioned dataset"
 ```
