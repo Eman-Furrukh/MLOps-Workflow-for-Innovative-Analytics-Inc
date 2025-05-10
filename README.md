@@ -131,3 +131,16 @@ dvc add data/raw/collect_data.csv
 git add data/.gitignore collect_data.csv.dvc
 git commit -m "Add versioned dataset"
 ```
+
+Test casses
+Test Case 1: Verifies that fetch_weather() returns valid data with correct types and structure
+
+Test Case 2: Tests that write_to_csv() correctly creates files and writes data
+
+Test Case 3: Validates that preprocessing creates the expected features and handles different weather conditions
+
+Test Case 4: Checks that model training creates a valid model file
+
+Test Case 5: Verifies that the trained model can make predictions
+
+Bonus Test Case: Tests error handling for empty data and failed API calls
