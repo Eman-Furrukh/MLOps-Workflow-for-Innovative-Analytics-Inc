@@ -10,10 +10,10 @@ import logging
 
 
 # Add the current directory to sys.path to import modules
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+sys.path.append(os.path.abspath(os.path.dirname(__file__))
 
 
-# Setup a basic logger if the custom logger isn't available
+# Setup a basic logger (fallback if src.utils.logger not available)
 def get_logger(name):
     """Initialize and return a logger with the given name."""
     logger = logging.getLogger(name)
@@ -28,7 +28,7 @@ def get_logger(name):
     return logger
 
 
-# Try to import project modules, but provide mock implementations if they don't exist
+# Try to import project modules, but provide mock implementations if missing
 try:
     from src.data.make_dataset import process_data
 except ImportError:
@@ -36,9 +36,10 @@ except ImportError:
     def process_data(df):
         """Mock implementation of process_data."""
         print("Using mock process_data function")
-        # Basic data processing
         if 'ocean_proximity' in df.columns:
-            df = pd.get_dummies(df, columns=['ocean_proximity'], drop_first=True)
+            df = pd.get_dummies(
+                df, columns=['ocean_proximity'], drop_first=True
+            )
         df = df.fillna(df.mean())
         return df
 
@@ -58,9 +59,11 @@ except ImportError:
             """Create basic features."""
             df = df.copy()
             if 'total_rooms' in df.columns and 'households' in df.columns:
-                df['rooms_per_household'] = df['total_rooms'] / df['households'].replace(0, 1)
+                df['rooms_per_household'] = (
+                    df['total_rooms'] / df['households'].replace(0, 1)
             if 'population' in df.columns and 'households' in df.columns:
-                df['population_per_household'] = df['population'] / df['households'].replace(0, 1)
+                df['population_per_household'] = (
+                    df['population'] / df['households'].replace(0, 1))
             return df
 
         def transform(self, df):
@@ -118,18 +121,13 @@ except ImportError:
 
         def predict(self, X):
             """Make predictions."""
-            if not all(col in X.columns for col in ['median_income', 'housing_median_age']):
+            if not all(col in X.columns for col in [
+                'median_income', 'housing_median_age'
+            ]):
                 raise ValueError("Input data missing required columns")
 
             X_scaled = self.scaler.transform(X)
             return self.model.predict(X_scaled)
-
-
-try:
-    from src.utils.logger import get_logger
-except ImportError:
-    # We already defined get_logger above
-    pass
 
 
 # Initialize logger
@@ -149,16 +147,13 @@ class TestMLOpsWorkflow(unittest.TestCase):
         self.model_path = "models/linear_regression_model.pkl"
         self.scaler_path = "models/scaler.pkl"
 
-        # Create small synthetic dataset for testing if real data not available
+        # Create small synthetic dataset if real data not available
         if not os.path.exists(self.data_path):
-            # Create directories if they don't exist
             os.makedirs("data/raw", exist_ok=True)
 
-            # Create synthetic data
             np.random.seed(42)
             n_samples = 100
 
-            # Generate synthetic housing data
             data = {
                 'median_house_value': np.random.normal(200000, 75000, n_samples),
                 'median_income': np.random.normal(4, 2, n_samples),
@@ -170,17 +165,16 @@ class TestMLOpsWorkflow(unittest.TestCase):
                 'latitude': np.random.uniform(32, 42, n_samples),
                 'longitude': np.random.uniform(-124, -114, n_samples),
                 'ocean_proximity': np.random.choice(
-                    ['<1H OCEAN', 'INLAND', 'NEAR OCEAN', 'NEAR BAY'], n_samples
+                    ['<1H OCEAN', 'INLAND', 'NEAR OCEAN', 'NEAR BAY'], 
+                    n_samples
                 )
             }
 
-            # Convert to DataFrame and save
             synthetic_df = pd.DataFrame(data)
             os.makedirs(os.path.dirname(self.data_path), exist_ok=True)
             synthetic_df.to_csv(self.data_path, index=False)
             logger.info(f"Created synthetic dataset at {self.data_path}")
 
-        # Ensure processed data directory exists
         os.makedirs("data/processed", exist_ok=True)
         os.makedirs("models", exist_ok=True)
 
@@ -197,19 +191,15 @@ class TestMLOpsWorkflow(unittest.TestCase):
     def test_data_processing(self):
         """Test data processing functionality."""
         try:
-            # Process data
             df = pd.read_csv(self.data_path)
             processed_df = process_data(df)
 
-            # Check if processing worked
             self.assertIsNotNone(processed_df)
             self.assertGreater(len(processed_df), 0)
 
-            # Check if categorical variables were encoded
             if 'ocean_proximity' in df.columns:
                 self.assertNotIn('ocean_proximity', processed_df.columns)
 
-            # Save processed data for other tests
             processed_df.to_csv(self.processed_data_path, index=False)
             logger.info("Data processing test passed")
         except Exception as e:
@@ -218,22 +208,20 @@ class TestMLOpsWorkflow(unittest.TestCase):
     def test_feature_engineering(self):
         """Test feature engineering functionality."""
         try:
-            # Load processed data or create it if it doesn't exist
             if not os.path.exists(self.processed_data_path):
                 self.test_data_processing()
 
             df = pd.read_csv(self.processed_data_path)
-
-            # Apply feature engineering
             feature_eng = FeatureEngineering()
             transformed_df = feature_eng.fit_transform(df)
 
-            # Check if feature engineering worked
             self.assertIsNotNone(transformed_df)
             self.assertGreater(len(transformed_df), 0)
 
-            # Check if new features were created
-            expected_new_features = ['rooms_per_household', 'population_per_household']
+            expected_new_features = [
+                'rooms_per_household', 
+                'population_per_household'
+            ]
             for feature in expected_new_features:
                 self.assertIn(feature, transformed_df.columns)
 
@@ -244,17 +232,13 @@ class TestMLOpsWorkflow(unittest.TestCase):
     def test_model_training(self):
         """Test model training functionality."""
         try:
-            # Load processed data or create it if it doesn't exist
             if not os.path.exists(self.processed_data_path):
                 self.test_data_processing()
 
             df = pd.read_csv(self.processed_data_path)
-
-            # Apply feature engineering
             feature_eng = FeatureEngineering()
             transformed_df = feature_eng.fit_transform(df)
 
-            # Prepare features and target
             if 'median_house_value' in transformed_df.columns:
                 X = transformed_df.drop('median_house_value', axis=1)
                 y = transformed_df['median_house_value']
@@ -262,20 +246,16 @@ class TestMLOpsWorkflow(unittest.TestCase):
                 X = transformed_df.iloc[:, 1:]
                 y = transformed_df.iloc[:, 0]
 
-            # Split data
             X_train, X_test, y_train, y_test = train_test_split(
                 X, y, test_size=0.2, random_state=42
             )
 
-            # Train model
             trainer = ModelTrainer()
             model, scaler = trainer.train(X_train, y_train)
 
-            # Check if model training worked
             self.assertIsNotNone(model)
             self.assertIsNotNone(scaler)
 
-            # Save model and scaler for prediction test
             joblib.dump(model, self.model_path)
             joblib.dump(scaler, self.scaler_path)
 
@@ -286,27 +266,21 @@ class TestMLOpsWorkflow(unittest.TestCase):
     def test_model_prediction(self):
         """Test model prediction functionality."""
         try:
-            # Load processed data or create it if it doesn't exist
             if not os.path.exists(self.processed_data_path):
                 self.test_data_processing()
 
             df = pd.read_csv(self.processed_data_path)
-
-            # Prepare features for prediction
             feature_eng = FeatureEngineering()
             transformed_df = feature_eng.transform(df)
 
-            # Ensure features are correctly prepared
             if 'median_house_value' in transformed_df.columns:
                 X = transformed_df.drop('median_house_value', axis=1)
             else:
                 X = transformed_df.iloc[:, 1:]
 
-            # Predict with trained model
             predictor = ModelPredictor(self.model_path, self.scaler_path)
             predictions = predictor.predict(X)
 
-            # Check if predictions are made
             self.assertIsNotNone(predictions)
             self.assertEqual(len(predictions), len(X))
 
