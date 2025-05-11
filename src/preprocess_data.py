@@ -1,4 +1,3 @@
-#preprocess_data.py
 import pandas as pd
 import os
 
@@ -9,7 +8,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW_CSV = os.path.join(BASE_DIR, "data", "raw", "glasgow_weather_data.csv")
 PROCESSED_CSV = os.path.join(BASE_DIR, "data", "processed", "preprocessed_weather_data.csv")
 
+
 def preprocess_weather_data(input_path, output_path):
+    """Preprocess weather data from raw CSV and save cleaned version."""
     # Read data with a specific encoding (ISO-8859-1)
     df = pd.read_csv(input_path, encoding='ISO-8859-1')
 
@@ -23,7 +24,9 @@ def preprocess_weather_data(input_path, output_path):
     df['Hour'] = df['Timestamp'].dt.hour
 
     # Feature: Is it rainy/cloudy?
-    df['Is_Rainy'] = df['Weather'].str.contains("rain|drizzle|storm|shower", case=False, na=False).astype(int)
+    df['Is_Rainy'] = df['Weather'].str.contains(
+        "rain|drizzle|storm|shower", case=False, na=False
+    ).astype(int)
 
     # Drop unneeded columns
     df = df.drop(columns=['City', 'Timestamp'])
