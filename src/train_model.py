@@ -4,7 +4,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
-
 def train_weather_model(input_file_path, output_model_path):
     """
     Train a weather prediction model using preprocessed weather data.
@@ -12,7 +11,7 @@ def train_weather_model(input_file_path, output_model_path):
     Args:
         input_file_path (str): Path to the preprocessed weather data CSV
         output_model_path (str): Path to save the trained model
-        
+    
     Returns:
         dict: Dictionary containing model performance metrics
     """
