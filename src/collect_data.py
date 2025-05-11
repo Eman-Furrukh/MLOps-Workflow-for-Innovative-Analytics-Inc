@@ -39,4 +39,6 @@ if __name__ == "__main__":
     if weather:
         write_to_csv(weather, OUTPUT_CSV)
         print("Weather data logged.")
-    time.sleep(1800)
+        print(f"Writing to: {OUTPUT_CSV}")
+#    time.sleep(1800)
+

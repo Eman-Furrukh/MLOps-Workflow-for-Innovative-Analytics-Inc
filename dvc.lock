@@ -17,8 +17,8 @@ stages:
     deps:
     - path: data/raw/glasgow_weather_data.csv
       hash: md5
-      md5: 8c50ed124aeeaa942a8ee4ad26991f9d
-      size: 125
+      md5: 9484b01a2b56f8a00a4e83121a62908c
+      size: 184
     - path: src/preprocess_data.py
       hash: md5
       md5: a9b11369912431cadb4af638760fe6a7

@@ -3,13 +3,13 @@ from airflow.operators.python import PythonOperator
 from datetime import timedelta, datetime
 import os
 
-def pull_data_from_dvc():
-    os.system('dvc pull')
+def collect_data():
+    os.system('python src/collect_data.py')
 
-def process_data():
-    print("Processing the data...")
-
-def push_data_to_dvc():
+def update_dvc():
+    # DO NOT use `dvc add` again and again!
+    os.system('git add data/raw/glasgow_weather_data.csv')
+    os.system('git commit -m "Append weather data from Airflow"')
     os.system('dvc push')
 
 default_args = {
@@ -22,24 +22,19 @@ default_args = {
 with DAG(
     'dvc_data_pipeline',
     default_args=default_args,
-    description='A simple DVC data pipeline with Airflow',
-    schedule_interval="*/30 * * * *",  # ⏱️ Every 30 minutes
+    description='A DVC-integrated pipeline that collects and pushes data every 10 minutes',
+    schedule_interval="*/10 * * * *",  # ⏱️ Every 10 minutes
     catchup=False,
 ) as dag:
 
-    pull_task = PythonOperator(
-        task_id='pull_data_from_dvc',
-        python_callable=pull_data_from_dvc,
+    collect_data_task = PythonOperator(
+        task_id='collect_data',
+        python_callable=collect_data,
     )
 
-    process_task = PythonOperator(
-        task_id='process_data',
-        python_callable=process_data,
+    update_dvc_task = PythonOperator(
+        task_id='update_dvc',
+        python_callable=update_dvc,
     )
 
-    push_task = PythonOperator(
-        task_id='push_data_to_dvc',
-        python_callable=push_data_to_dvc,
-    )
-
-    pull_task >> process_task >> push_task
+    collect_data_task >> update_dvc_task
