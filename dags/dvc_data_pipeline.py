@@ -1,18 +1,20 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import timedelta, datetime
-import os
 import subprocess
+
 
 def collect_data():
     """Run the script to collect weather data."""
     subprocess.run(['python', 'src/collect_data.py'], check=True)
+
 
 def update_dvc():
     """Stage CSV file changes and push with DVC."""
     subprocess.run(['git', 'add', 'data/raw/glasgow_weather_data.csv'], check=True)
     subprocess.run(['git', 'commit', '-m', 'Append weather data from Airflow'], check=True)
     subprocess.run(['dvc', 'push'], check=True)
+
 
 default_args = {
     'owner': 'airflow',

@@ -37,10 +37,8 @@ except ImportError:
         """Mock implementation of process_data."""
         print("Using mock process_data function")
         # Basic data processing
-        # Handle categorical variables
         if 'ocean_proximity' in df.columns:
             df = pd.get_dummies(df, columns=['ocean_proximity'], drop_first=True)
-        # Fill missing values
         df = df.fillna(df.mean())
         return df
 
@@ -60,13 +58,9 @@ except ImportError:
             """Create basic features."""
             df = df.copy()
             if 'total_rooms' in df.columns and 'households' in df.columns:
-                df['rooms_per_household'] = (
-                    df['total_rooms'] / df['households'].replace(0, 1)
-                )
+                df['rooms_per_household'] = df['total_rooms'] / df['households'].replace(0, 1)
             if 'population' in df.columns and 'households' in df.columns:
-                df['population_per_household'] = (
-                    df['population'] / df['households'].replace(0, 1)
-                )
+                df['population_per_household'] = df['population'] / df['households'].replace(0, 1)
             return df
 
         def transform(self, df):
@@ -265,7 +259,6 @@ class TestMLOpsWorkflow(unittest.TestCase):
                 X = transformed_df.drop('median_house_value', axis=1)
                 y = transformed_df['median_house_value']
             else:
-                # If synthetic data has different target, adjust accordingly
                 X = transformed_df.iloc[:, 1:]
                 y = transformed_df.iloc[:, 0]
 
