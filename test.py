@@ -10,7 +10,7 @@ import logging
 
 
 # Add the current directory to sys.path to import modules
-sys.path.append(os.path.abspath(os.path.dirname(__file__))
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 
 # Setup a basic logger (fallback if src.utils.logger not available)
@@ -61,9 +61,11 @@ except ImportError:
             if 'total_rooms' in df.columns and 'households' in df.columns:
                 df['rooms_per_household'] = (
                     df['total_rooms'] / df['households'].replace(0, 1)
+                )
             if 'population' in df.columns and 'households' in df.columns:
                 df['population_per_household'] = (
-                    df['population'] / df['households'].replace(0, 1))
+                    df['population'] / df['households'].replace(0, 1)
+                )
             return df
 
         def transform(self, df):
@@ -155,7 +157,8 @@ class TestMLOpsWorkflow(unittest.TestCase):
             n_samples = 100
 
             data = {
-                'median_house_value': np.random.normal(200000, 75000, n_samples),
+                'median_house_value': np.random.normal(
+                    200000, 75000, n_samples),
                 'median_income': np.random.normal(4, 2, n_samples),
                 'housing_median_age': np.random.uniform(1, 50, n_samples),
                 'total_rooms': np.random.normal(2000, 1000, n_samples),
@@ -165,7 +168,7 @@ class TestMLOpsWorkflow(unittest.TestCase):
                 'latitude': np.random.uniform(32, 42, n_samples),
                 'longitude': np.random.uniform(-124, -114, n_samples),
                 'ocean_proximity': np.random.choice(
-                    ['<1H OCEAN', 'INLAND', 'NEAR OCEAN', 'NEAR BAY'], 
+                    ['<1H OCEAN', 'INLAND', 'NEAR OCEAN', 'NEAR BAY'],
                     n_samples
                 )
             }
@@ -219,7 +222,7 @@ class TestMLOpsWorkflow(unittest.TestCase):
             self.assertGreater(len(transformed_df), 0)
 
             expected_new_features = [
-                'rooms_per_household', 
+                'rooms_per_household',
                 'population_per_household'
             ]
             for feature in expected_new_features:
