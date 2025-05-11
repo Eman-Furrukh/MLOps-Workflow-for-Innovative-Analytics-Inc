@@ -5,20 +5,20 @@ stages:
     deps:
     - path: src/collect_data.py
       hash: md5
-      md5: 287f5a0c5695e2fa4804ce0a293c7174
+      md5: ae31f52a52887f52a457073c56ffb4a8
       size: 1440
     outs:
     - path: data/raw/glasgow_weather_data.csv
       hash: md5
-      md5: ee390ec5599f5ac6c7e85e26d561f6aa
-      size: 123
+      md5: 8c50ed124aeeaa942a8ee4ad26991f9d
+      size: 125
   preprocess_data:
     cmd: python src/preprocess_data.py
     deps:
     - path: data/raw/glasgow_weather_data.csv
       hash: md5
-      md5: ee390ec5599f5ac6c7e85e26d561f6aa
-      size: 123
+      md5: 8c50ed124aeeaa942a8ee4ad26991f9d
+      size: 125
     - path: src/preprocess_data.py
       hash: md5
       md5: a9b11369912431cadb4af638760fe6a7
