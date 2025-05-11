@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - airflow_net
+
+  redis:
+    image: redis:latest
+    networks:
+      - airflow_net
+
+  airflow-webserver:
+    image: apache/airflow:2.5.0
+    command: webserver
+    environment:
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080 
+      - AIRFLOW__CORE__FERNET_KEY=zzsAstmABCQH-vEWfWAFHLUAAO3uvELCRHtqZdSfjtI=
+      - AIRFLOW__WEBSERVER__RBAC=True
+    ports:
+      - "8081:8080" 
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - airflow_net
+
+
+  airflow-scheduler:
+    image: apache/airflow:2.5.0
+    command: scheduler
+    environment:
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - airflow_net
+
+  airflow-worker:
+    image: apache/airflow:2.5.0
+    command: celery worker
+    environment:
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - airflow_net
+
+networks:
+  airflow_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

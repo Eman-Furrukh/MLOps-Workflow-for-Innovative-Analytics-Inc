@@ -1,0 +1,21 @@
+stages:
+  collect_data:
+    cmd: python src/collect_data.py
+    deps:
+    - src/collect_data.py
+    outs:
+    - data/raw/glasgow_weather_data.csv
+  preprocess_data:
+    cmd: python src/preprocess_data.py
+    deps:
+    - data/raw/glasgow_weather_data.csv
+    - src/preprocess_data.py
+    outs:
+    - data/processed/preprocessed_weather_data.csv
+  train_model:
+    cmd: python src/train_model.py
+    deps:
+    - data/processed/preprocessed_weather_data.csv
+    - src/train_model.py
+    outs:
+    - model/weather_model.pkl
